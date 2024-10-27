@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES Encryption Example</title>
+    <script src="./crypto-js.min.js"></script>
+</head>
+<body>
+    <h2>AES-256-CBC Encryption/Decryption</h2>
+    
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter password">
+    </div>
+    
+    <div>
+        <label for="encrypted">Encrypted:</label>
+        <textarea id="encrypted" rows="4" cols="50" placeholder="Encrypted text will appear here..."></textarea>
+    </div>
+    
+    <div>
+        <label for="decrypted">Decrypted:</label>
+        <textarea id="decrypted" rows="30" cols="50" placeholder="Decrypted text will appear here..."></textarea>
+    </div>
+    
+    <button onclick="encrypt()">Encrypt</button>
+    <button onclick="decrypt()">Decrypt</button>
+
+    <script>
+        function encrypt() {
+            const password = document.getElementById('password').value;
+            const data = document.getElementById('decrypted').value; // You can modify this as needed
+            const iv = CryptoJS.lib.WordArray.random(16); // Generate random IV
+            const encrypted = CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse(password), {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            const result = iv.toString() + ':' + encrypted.toString();
+            document.getElementById('encrypted').value = result;
+        }
+
+        function decrypt() {
+            const password = document.getElementById('password').value;
+            const encryptedText = document.getElementById('encrypted').value;
+
+            const parts = encryptedText.split(':');
+            const iv = CryptoJS.enc.Hex.parse(parts[0]);
+            const encrypted = parts[1];
+
+            const decrypted = CryptoJS.AES.decrypt(encrypted, CryptoJS.enc.Utf8.parse(password), {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            document.getElementById('decrypted').value = decrypted.toString(CryptoJS.enc.Utf8);
+        }
+    </script>
+</body>
+</html>
