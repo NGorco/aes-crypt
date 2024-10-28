@@ -121,6 +121,7 @@
 
                 reader.addEventListener('load', function (e) {
                     output.textContent = e.target.result;
+                    decrypt()
                 });
 
                 reader.readAsBinaryString(myFile);
