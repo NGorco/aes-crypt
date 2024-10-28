@@ -1,31 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AES Encryption Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <script src="./crypto-js.min.js"></script>
 </head>
+
 <body>
     <h2>AES-256-CBC Encryption/Decryption</h2>
-    
+
     <div>
         <label for="password">Password:</label>
+        <br>
         <input type="password" id="password" placeholder="Enter password">
+        <br>
     </div>
-    
+
     <div>
-        <label for="encrypted">Encrypted:</label>
+        <label for="password">Search:</label>
+        <br>
+        <input type="text" id="search" placeholder="Enter search">
+        <br>
+    </div>
+    <br>
+
+    <input type="file" accept='text/plain' id="myFile">
+
+    <div>
+        <label for="encrypted">Encrypted:</label><br>
         <textarea id="encrypted" rows="4" cols="50" placeholder="Encrypted text will appear here..."></textarea>
+        <br>
     </div>
-    
+    <br>
+
+    <button onclick="encrypt()" style="padding: 10px 30px;">Encrypt</button>
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    <button onclick="decrypt()" style="padding: 10px 30px;">Decrypt</button>
+    <br>
+    <br>
+
     <div>
-        <label for="decrypted">Decrypted:</label>
+        <label for="search-result">Search:</label><br>
+
+        <div id="search-result"></div>
+    </div>
+    <br>
+    <div>
+        <label for="decrypted">Decrypted:</label><br>
         <textarea id="decrypted" rows="30" cols="50" placeholder="Decrypted text will appear here..."></textarea>
     </div>
-    
-    <button onclick="encrypt()">Encrypt</button>
-    <button onclick="decrypt()">Decrypt</button>
 
     <script>
         function encrypt() {
@@ -54,8 +82,61 @@
                 mode: CryptoJS.mode.CBC,
                 padding: CryptoJS.pad.Pkcs7
             });
-            document.getElementById('decrypted').value = decrypted.toString(CryptoJS.enc.Utf8);
+            const decrypt = decrypted.toString(CryptoJS.enc.Utf8);
+            document.getElementById('decrypted').value = decrypt;
+
+            const search = document.getElementById('search').value;
+            if (search.length > 1) {
+                const lines = decrypt.split('\n');
+                const filteredLines = [];
+                for (const line of lines) {
+                    if (line.toLowerCase().indexOf(search.toLowerCase()) > -1) {
+                        filteredLines.push(line);
+                    }
+                }
+                [...document.getElementById('search-result').children].forEach(c => c.remove())
+                filteredLines.forEach(item => {
+                    item.split(' ').forEach(l => {
+                        const span = document.createElement('input');
+                        span.value = l;
+                        span.disabled = true;
+
+                        document.getElementById('search-result').appendChild(span);
+                    });
+                    let br = document.createElement('br');
+                    document.getElementById('search-result').appendChild(br);
+                     br = document.createElement('br');
+                    document.getElementById('search-result').appendChild(br);
+                });
+            }
         }
+        var input = document.getElementById("myFile");
+        var output = document.getElementById("encrypted");
+
+
+        input.addEventListener("change", function () {
+            if (this.files && this.files[0]) {
+                var myFile = this.files[0];
+                var reader = new FileReader();
+
+                reader.addEventListener('load', function (e) {
+                    output.textContent = e.target.result;
+                });
+
+                reader.readAsBinaryString(myFile);
+            }
+        });
+
+
     </script>
+    <style>
+        #search-result input {
+            display: inline-block;
+            margin-right: 13px;
+        }
+    </style>
+
+    <div id="error"></div>
 </body>
+
 </html>
